@@ -5,6 +5,8 @@ node_modules/
 .env.*.local
 dist/
 **/dist/
+!packages/shared/dist/
+!packages/shared/dist/**
 build/
 **/build/
 .expo/

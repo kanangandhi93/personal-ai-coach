@@ -9,7 +9,7 @@
     "web"
   ],
   "scripts": {
-    "build": "npm --prefix packages/shared run build && npm --prefix backend run build",
+    "build": "npm --prefix packages/shared run build && node -e \"const fs=require('fs'); if(fs.existsSync('backend/node_modules/@coach/shared') && fs.realpathSync('packages/shared') !== fs.realpathSync('backend/node_modules/@coach/shared')) fs.cpSync('packages/shared/dist', 'backend/node_modules/@coach/shared/dist', {recursive:true});\" && npm --prefix backend run build",
     "start": "npm --prefix backend run start",
     "build:shared": "npm --prefix packages/shared run build",
     "build:backend": "npm --prefix backend run build",

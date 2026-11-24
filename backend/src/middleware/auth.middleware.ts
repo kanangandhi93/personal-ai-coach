@@ -11,8 +11,8 @@ export interface AuthenticatedRequest extends Request {
 export async function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
 
-  // For testing / Phase 0 local dev without Supabase network connection
-  if (process.env.NODE_ENV !== 'production' && (!authHeader || authHeader === 'Bearer dev-token')) {
+  // Seamless single-user mode (No login required / dev-token)
+  if (!authHeader || authHeader === 'Bearer dev-token') {
     req.user = {
       id: '9acea783-935e-4a74-a07f-851b7aaee066',
       email: 'learner@coach.local'

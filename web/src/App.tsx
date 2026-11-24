@@ -41,11 +41,8 @@ const getInitialApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('COACH_API_BASE');
     if (saved) return saved;
-    if (window.location.protocol === 'file:' || (window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')) {
-      return 'http://192.168.1.13:4000';
-    }
   }
-  return 'http://192.168.1.13:4000';
+  return 'https://personal-ai-coach-tnul.onrender.com';
 };
 
 type ActiveTab = 'roadmap' | 'teacher' | 'doubts' | 'practice' | 'mastery';

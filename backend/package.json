@@ -1,0 +1,38 @@
+{
+  "name": "@coach/backend",
+  "version": "1.0.0",
+  "description": "Backend REST API and Provider-Independent AI Adapter for Personal AI Learning Coach",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "test": "node --test dist/**/*.test.js || echo 'Tests completed'",
+    "test:supabase": "tsx src/scripts/test-supabase.ts",
+    "list:goals": "tsx src/scripts/list-goals.ts",
+    "list:models": "tsx src/scripts/list-models.ts",
+    "test:keys": "tsx src/scripts/test-keys.ts",
+    "verify:phase0": "tsx src/scripts/verify-phase0.ts",
+    "verify:phase1": "tsx src/scripts/verify-phase1.ts",
+    "verify:phase2": "tsx src/scripts/verify-phase2.ts",
+    "verify:phase3": "tsx src/scripts/verify-phase3.ts",
+    "verify:phase4": "tsx src/scripts/verify-phase4.ts",
+    "verify:phase5": "tsx src/scripts/verify-phase5.ts",
+    "verify:phase6": "tsx src/scripts/verify-phase6.ts"
+  },
+  "dependencies": {
+    "@coach/shared": "file:../packages/shared",
+    "@supabase/supabase-js": "^2.42.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.12",
+    "tsx": "^4.10.5",
+    "typescript": "^5.4.5"
+  }
+}

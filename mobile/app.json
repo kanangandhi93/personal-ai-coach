@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "Personal AI Learning Coach",
+    "slug": "kanan-gandhi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "backgroundColor": "#020617"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#020617"
+      },
+      "package": "com.coach.learningcoach"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "86aaa697-7980-470b-9c48-d207eb4"
+      }
+    }
+  }
+}

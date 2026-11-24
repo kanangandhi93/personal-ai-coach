@@ -1,0 +1,36 @@
+{
+  "name": "personal-ai-learning-coach-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal AI Learning Coach - Multi-agent ₹0 budget teaching institution",
+  "workspaces": [
+    "packages/*",
+    "backend",
+    "web"
+  ],
+  "scripts": {
+    "build": "npm --prefix packages/shared run build && npm --prefix backend run build",
+    "start": "npm --prefix backend run start",
+    "build:shared": "npm --prefix packages/shared run build",
+    "build:backend": "npm --prefix backend run build",
+    "build:web": "npm --prefix web run build",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:web": "npm --prefix web run dev",
+    "test:backend": "npm --prefix backend test",
+    "verify:phase0": "npm --prefix backend run verify:phase0",
+    "verify:phase1": "npm --prefix backend run verify:phase1",
+    "verify:phase2": "npm --prefix backend run verify:phase2",
+    "verify:phase3": "npm --prefix backend run verify:phase3",
+    "verify:phase4": "npm --prefix backend run verify:phase4",
+    "verify:phase5": "npm --prefix backend run verify:phase5",
+    "verify:phase6": "npm --prefix backend run verify:phase6"
+  },
+  "keywords": [
+    "ai-coach",
+    "learning",
+    "multi-agent",
+    "supabase"
+  ],
+  "author": "Antigravity Architect",
+  "license": "MIT"
+}

@@ -41,6 +41,9 @@ const getInitialApiBase = (): string => {
   if (typeof window !== 'undefined') {
     const saved = localStorage.getItem('COACH_API_BASE');
     if (saved) return saved;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:4000';
+    }
   }
   return 'https://personal-ai-coach-tnul.onrender.com';
 };
@@ -530,16 +533,24 @@ export default function App() {
               </div>
 
               <div className="space-y-2 overflow-y-auto max-h-[500px]">
-                {goals.map(g => (
-                  <div
-                    key={g.id}
-                    onClick={() => selectGoal(g)}
-                    className={`p-3 rounded-lg border cursor-pointer transition flex items-center justify-between ${
-                      selectedGoal?.id === g.id
-                        ? 'bg-sky-950/40 border-sky-500/50 text-sky-100 shadow-sm'
-                        : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-300'
-                    }`}
-                  >
+                {goals.length === 0 ? (
+                  <div className="p-4 text-center border border-dashed border-slate-800 rounded-lg text-slate-400">
+                    <p className="text-xs font-medium text-slate-300">No learning goals yet</p>
+                    <p className="text-[11px] text-slate-500 mt-1">
+                      Click <button type="button" onClick={() => setShowGoalModal(true)} className="text-sky-400 font-semibold underline">Add Goal</button> above to start!
+                    </p>
+                  </div>
+                ) : (
+                  goals.map(g => (
+                    <div
+                      key={g.id}
+                      onClick={() => selectGoal(g)}
+                      className={`p-3 rounded-lg border cursor-pointer transition flex items-center justify-between ${
+                        selectedGoal?.id === g.id
+                          ? 'bg-sky-950/40 border-sky-500/50 text-sky-100 shadow-sm'
+                          : 'bg-slate-950/40 border-slate-800 hover:border-slate-700 text-slate-300'
+                      }`}
+                    >
                     <div>
                       <div className="text-xs font-semibold">{g.title}</div>
                       <div className="text-[11px] text-slate-500 mt-1">Stage {g.currentStage} / 15</div>
@@ -552,7 +563,7 @@ export default function App() {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                ))}
+                )))}
               </div>
             </div>
 
@@ -1011,6 +1022,13 @@ export default function App() {
                   className="text-sky-400 hover:text-sky-300 bg-slate-800 px-2 py-0.5 rounded font-mono"
                 >
                   Localhost
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setServerUrlInput('https://personal-ai-coach-tnul.onrender.com')}
+                  className="text-emerald-400 hover:text-emerald-300 bg-slate-800 px-2 py-0.5 rounded font-mono"
+                >
+                  Cloud (Render)
                 </button>
               </div>
 

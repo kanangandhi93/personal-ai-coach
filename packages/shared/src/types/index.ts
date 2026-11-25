@@ -38,7 +38,7 @@ export enum AgentType {
   RESEARCH = 'research'
 }
 
-export type FreeAIProvider = 'gemini' | 'groq' | 'openrouter' | 'cerebras' | 'mock';
+export type FreeAIProvider = 'gemini' | 'groq' | 'openrouter' | 'cerebras' | 'cohere' | 'mock';
 
 export enum AssessmentType {
   MCQ = 'mcq',

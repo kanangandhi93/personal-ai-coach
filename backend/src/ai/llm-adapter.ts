@@ -4,6 +4,7 @@ import { GeminiProvider } from './providers/gemini.provider';
 import { GroqProvider } from './providers/groq.provider';
 import { OpenRouterProvider } from './providers/openrouter.provider';
 import { CerebrasProvider } from './providers/cerebras.provider';
+import { CohereProvider } from './providers/cohere.provider';
 import { MockProvider } from './providers/mock.provider';
 import { circuitBreaker } from './circuit-breaker';
 import { quotaTracker } from './quota-tracker';
@@ -26,6 +27,7 @@ export class LLMProviderAdapter {
     const groq = new GroqProvider();
     const openrouter = new OpenRouterProvider();
     const cerebras = new CerebrasProvider();
+    const cohere = new CohereProvider();
     const mock = new MockProvider();
 
     this.mockProvider = mock;
@@ -34,6 +36,7 @@ export class LLMProviderAdapter {
     this.providers.set('groq', groq);
     this.providers.set('openrouter', openrouter);
     this.providers.set('cerebras', cerebras);
+    this.providers.set('cohere', cohere);
     this.providers.set('mock', mock);
   }
 
@@ -65,8 +68,8 @@ export class LLMProviderAdapter {
       candidateOrder.push(request.preferredProvider as FreeAIProvider);
     }
 
-    // Default priority order for free providers (Groq first for ultra-low latency)
-    const defaultPriority: FreeAIProvider[] = ['groq', 'openrouter', 'cerebras', 'gemini'];
+    // Default priority order for free providers (Groq first, Cohere second for ultra-low latency & reliability)
+    const defaultPriority: FreeAIProvider[] = ['groq', 'cohere', 'openrouter', 'cerebras', 'gemini'];
     for (const p of defaultPriority) {
       if (!candidateOrder.includes(p)) {
         candidateOrder.push(p);

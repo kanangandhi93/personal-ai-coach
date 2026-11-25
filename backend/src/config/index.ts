@@ -18,6 +18,7 @@ const EnvSchema = z.object({
   GROQ_API_KEY: z.string().optional().default(''),
   OPENROUTER_API_KEY: z.string().optional().default(''),
   CEREBRAS_API_KEY: z.string().optional().default(''),
+  COHERE_API_KEY: z.string().optional().default(''),
   ENABLE_MOCK_FALLBACK: z.string().default('true').transform((v) => v === 'true'),
   AI_REQUEST_TIMEOUT_MS: z.string().default('15000').transform(Number),
   CIRCUIT_BREAKER_COOLDOWN_SEC: z.string().default('60').transform(Number),
@@ -62,6 +63,15 @@ export const FREE_PROVIDER_CAPABILITIES: Record<FreeAIProvider, ProviderCapabili
     supportsJsonMode: true,
     requestsPerMinuteLimit: 30,
     requestsPerDayLimit: 14400,
+    isFreeTierOnly: true
+  },
+  cohere: {
+    provider: 'cohere',
+    model: 'command-a-03-2025',
+    maxTokens: 4096,
+    supportsJsonMode: true,
+    requestsPerMinuteLimit: 20,
+    requestsPerDayLimit: 1000,
     isFreeTierOnly: true
   },
   mock: {

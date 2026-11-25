@@ -66,6 +66,7 @@ export default function App() {
   const [selectedLessonId, setSelectedLessonId] = useState<string>('');
   const [explanation, setExplanation] = useState<TeacherExplanation | null>(null);
   const [explanationStyle, setExplanationStyle] = useState<ExplanationStyle>('first_principles');
+  const [selectedQuizAnswers, setSelectedQuizAnswers] = useState<Record<number, string>>({});
   
   // Loading & Action States
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -234,6 +235,7 @@ export default function App() {
   const fetchLessonExplanation = async (lessonId: string, conceptName: string, goalId: string, style = explanationStyle, overrideUrl?: string) => {
     const target = overrideUrl || apiBase;
     setIsLoading(true);
+    setSelectedQuizAnswers({});
     try {
       const res = await fetch(`${target}/api/lessons/${lessonId}/teach`, {
         method: 'POST',
@@ -657,21 +659,27 @@ export default function App() {
             ) : explanation ? (
               <div className="space-y-4 text-xs">
                 <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-                  <h4 className="font-bold text-sky-400 mb-1">1. Intuition & Mental Model</h4>
-                  <p className="text-slate-300 leading-relaxed">{explanation.overview}</p>
+                  <h4 className="font-bold text-sky-400 mb-2 flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4" />
+                    1. Intuition & Mental Model
+                  </h4>
+                  <p className="text-slate-300 leading-relaxed whitespace-pre-line text-sm">{explanation.overview}</p>
                 </div>
 
                 <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-                  <h4 className="font-bold text-amber-400 mb-1">2. Why, When & Where</h4>
-                  <p className="text-slate-300 leading-relaxed">{explanation.whyWhenWhere}</p>
+                  <h4 className="font-bold text-amber-400 mb-2">2. Why, When & Where</h4>
+                  <div className="text-slate-300 leading-relaxed whitespace-pre-line">{explanation.whyWhenWhere}</div>
                 </div>
 
                 <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-                  <h4 className="font-bold text-indigo-400 mb-1">3. Internal Architecture & Mechanics</h4>
-                  <p className="text-slate-300 leading-relaxed mb-3">{explanation.internalMechanisms}</p>
+                  <h4 className="font-bold text-indigo-400 mb-2">3. Internal Architecture & Mechanics</h4>
+                  <div className="text-slate-300 leading-relaxed whitespace-pre-line mb-3">{explanation.internalMechanisms}</div>
                   {explanation.diagramMermaid && (
-                    <div className="bg-slate-900 border border-slate-800 rounded p-3 font-mono text-[11px] text-slate-300">
-                      {explanation.diagramMermaid}
+                    <div className="bg-slate-900 border border-slate-800 rounded-lg p-3 text-slate-300">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-2">Architectural Process Flow</div>
+                      <div className="font-mono text-xs text-sky-300/90 whitespace-pre-wrap bg-slate-950 p-2.5 rounded border border-slate-800">
+                        {explanation.diagramMermaid}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -680,23 +688,80 @@ export default function App() {
                   <div key={i} className="bg-slate-950 border border-slate-800 rounded-lg p-4">
                     <h4 className="font-bold text-emerald-400 mb-2 flex items-center gap-1.5">
                       <Code className="w-4 h-4" />
-                      4. Annotated Code Snippet
+                      4. Practical Implementation / Templates
                     </h4>
-                    <pre className="bg-slate-900 p-3 rounded text-[11px] font-mono text-emerald-300 overflow-x-auto border border-slate-800">
+                    <pre className="bg-slate-900 p-3 rounded text-[11px] font-mono text-emerald-300 overflow-x-auto border border-slate-800 whitespace-pre">
                       {cs.code}
                     </pre>
-                    <p className="text-slate-400 mt-2">{cs.explanation}</p>
+                    <p className="text-slate-400 mt-2 text-xs">{cs.explanation}</p>
                   </div>
                 ))}
 
                 <div className="bg-slate-950/60 border border-slate-800 rounded-lg p-4">
-                  <h4 className="font-bold text-rose-400 mb-2">5. Critical Edge Cases & Limitations</h4>
-                  <ul className="list-disc list-inside space-y-1 text-slate-300">
+                  <h4 className="font-bold text-rose-400 mb-2">5. Critical Edge Cases & Common Mistakes</h4>
+                  <ul className="list-disc list-inside space-y-1.5 text-slate-300">
                     {explanation.edgeCasesAndLimitations?.map((ec, i) => (
                       <li key={i}>{ec}</li>
                     ))}
                   </ul>
                 </div>
+
+                {explanation.understandingQuestions && explanation.understandingQuestions.length > 0 && (
+                  <div className="bg-slate-950/80 border border-sky-900/50 rounded-lg p-4">
+                    <h4 className="font-bold text-sky-300 mb-3 flex items-center gap-1.5 text-sm">
+                      <CheckCircle className="w-4 h-4 text-sky-400" />
+                      6. Check Your Understanding (Quick Quiz)
+                    </h4>
+                    <div className="space-y-4">
+                      {explanation.understandingQuestions.map((q, qIndex) => {
+                        const selected = selectedQuizAnswers[qIndex];
+                        const isAnswered = selected !== undefined;
+                        const isCorrect = isAnswered && (selected === q.answer || selected.startsWith(q.answer));
+
+                        return (
+                          <div key={qIndex} className="bg-slate-900/80 border border-slate-800 rounded-lg p-3.5">
+                            <p className="font-semibold text-slate-100 mb-2.5 text-xs">
+                              {qIndex + 1}. {q.question}
+                            </p>
+                            <div className="space-y-1.5">
+                              {q.options?.map((opt, oIndex) => {
+                                const isThisSelected = selected === opt || selected === opt.charAt(0);
+                                const isThisCorrectOption = opt.startsWith(q.answer) || opt === q.answer;
+
+                                let btnStyle = "bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700";
+                                if (isAnswered) {
+                                  if (isThisCorrectOption) {
+                                    btnStyle = "bg-emerald-950/70 border-emerald-500/70 text-emerald-200 font-semibold";
+                                  } else if (isThisSelected) {
+                                    btnStyle = "bg-rose-950/70 border-rose-500/70 text-rose-300";
+                                  }
+                                }
+
+                                return (
+                                  <button
+                                    key={oIndex}
+                                    type="button"
+                                    disabled={isAnswered}
+                                    onClick={() => setSelectedQuizAnswers(prev => ({ ...prev, [qIndex]: opt }))}
+                                    className={`w-full text-left p-2.5 rounded border text-xs transition flex items-center justify-between ${btnStyle}`}
+                                  >
+                                    <span>{opt}</span>
+                                    {isAnswered && isThisCorrectOption && <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            {isAnswered && (
+                              <div className={`mt-2.5 p-2 rounded text-[11px] font-medium ${isCorrect ? 'text-emerald-300 bg-emerald-950/50 border border-emerald-800/40' : 'text-amber-300 bg-amber-950/50 border border-amber-800/40'}`}>
+                                {isCorrect ? '🎉 Correct answer!' : `💡 Correct answer: ${q.answer}`}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-xs text-slate-500 text-center py-16">Select a lesson from the Roadmap to begin learning.</div>

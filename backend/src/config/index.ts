@@ -14,6 +14,7 @@ const EnvSchema = z.object({
   SUPABASE_URL: z.string().url().default('https://placeholder.supabase.co'),
   SUPABASE_ANON_KEY: z.string().default('mock-anon-key'),
   SUPABASE_SERVICE_ROLE_KEY: z.string().default('mock-service-role-key'),
+  SUPABASE_SECRET_KEY: z.string().optional(),
   GEMINI_API_KEY: z.string().optional().default(''),
   GROQ_API_KEY: z.string().optional().default(''),
   OPENROUTER_API_KEY: z.string().optional().default(''),
@@ -25,7 +26,11 @@ const EnvSchema = z.object({
   MAX_RETRIES_PER_PROVIDER: z.string().default('2').transform(Number)
 });
 
-export const env = EnvSchema.parse(process.env);
+const parsedEnv = EnvSchema.parse(process.env);
+if (parsedEnv.SUPABASE_SERVICE_ROLE_KEY === 'mock-service-role-key' && parsedEnv.SUPABASE_SECRET_KEY) {
+  parsedEnv.SUPABASE_SERVICE_ROLE_KEY = parsedEnv.SUPABASE_SECRET_KEY;
+}
+export const env = parsedEnv;
 
 // Free-tier capability matrix (Strictly ₹0 / Free Tier compliant)
 export const FREE_PROVIDER_CAPABILITIES: Record<FreeAIProvider, ProviderCapability> = {

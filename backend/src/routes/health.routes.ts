@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { llmAdapter } from '../ai/llm-adapter';
+import { env } from '../config';
 import os from 'os';
 
 const router = Router();
@@ -23,6 +24,10 @@ router.get('/health', (req: Request, res: Response) => {
     ai: {
       availableFreeProviders: llmAdapter.getAvailableProviders(),
       zeroCostGuarantee: true
+    },
+    database: {
+      supabaseUrlConfigured: env.SUPABASE_URL !== 'https://placeholder.supabase.co',
+      serviceKeyConfigured: env.SUPABASE_SERVICE_ROLE_KEY !== 'mock-service-role-key'
     }
   });
 });

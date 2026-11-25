@@ -65,8 +65,8 @@ export class LLMProviderAdapter {
       candidateOrder.push(request.preferredProvider as FreeAIProvider);
     }
 
-    // Default priority order for free providers
-    const defaultPriority: FreeAIProvider[] = ['gemini', 'groq', 'openrouter', 'cerebras'];
+    // Default priority order for free providers (Groq first for ultra-low latency)
+    const defaultPriority: FreeAIProvider[] = ['groq', 'openrouter', 'cerebras', 'gemini'];
     for (const p of defaultPriority) {
       if (!candidateOrder.includes(p)) {
         candidateOrder.push(p);

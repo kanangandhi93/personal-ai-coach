@@ -74,8 +74,8 @@ Provide a deep, progressive, memorable explanation suitable for true mastery.`;
       const parsed = response.parsedJson ?? JSON.parse(response.text);
       parsed.lessonId = params.lessonId;
       explanation = TeacherExplanationSchema.parse(parsed);
-    } catch {
-      // Deterministic pedagogical fallback
+    } catch (err: any) {
+      console.error('[TeacherAgent] LLM generation error, falling back:', err.message);
       explanation = this.generateDeterministicExplanation(params.lessonId, params.conceptName, style);
     }
 

@@ -6,7 +6,7 @@ export class GeminiProvider implements IProvider {
   public readonly name: FreeAIProvider = 'gemini';
 
   public isConfigured(): boolean {
-    return Boolean(env.GEMINI_API_KEY && env.GEMINI_API_KEY.trim().length > 0);
+    return Boolean(env.GEMINI_API_KEY && env.GEMINI_API_KEY.startsWith('AIza'));
   }
 
   public async complete(request: LLMCompletionRequest): Promise<LLMResponse> {

@@ -18,8 +18,12 @@ export class GroqProvider implements IProvider {
     const url = 'https://api.groq.com/openai/v1/chat/completions';
     const startTime = Date.now();
 
+    const systemContent = request.responseFormat === 'json'
+      ? `${request.systemPrompt}\n\nIMPORTANT: Respond with pure, valid JSON only. Do not wrap in markdown or backticks.`
+      : request.systemPrompt;
+
     const messages = [
-      { role: 'system', content: request.systemPrompt },
+      { role: 'system', content: systemContent },
       { role: 'user', content: request.userPrompt }
     ];
 
@@ -29,10 +33,6 @@ export class GroqProvider implements IProvider {
       temperature: request.temperature,
       max_tokens: request.maxTokens
     };
-
-    if (request.responseFormat === 'json') {
-      bodyPayload.response_format = { type: 'json_object' };
-    }
 
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), env.AI_REQUEST_TIMEOUT_MS);
@@ -61,10 +61,19 @@ export class GroqProvider implements IProvider {
 
       let parsedJson: any = undefined;
       if (request.responseFormat === 'json') {
+        const cleaned = text.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
         try {
-          parsedJson = JSON.parse(text);
+          parsedJson = JSON.parse(cleaned);
         } catch {
-          // Fallback parsing
+          const firstBrace = cleaned.indexOf('{');
+          const lastBrace = cleaned.lastIndexOf('}');
+          if (firstBrace !== -1 && lastBrace !== -1) {
+            try {
+              parsedJson = JSON.parse(cleaned.substring(firstBrace, lastBrace + 1));
+            } catch {
+              // Failed JSON parsing
+            }
+          }
         }
       }
 

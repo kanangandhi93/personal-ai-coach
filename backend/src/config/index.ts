@@ -30,7 +30,7 @@ export const env = EnvSchema.parse(process.env);
 export const FREE_PROVIDER_CAPABILITIES: Record<FreeAIProvider, ProviderCapability> = {
   gemini: {
     provider: 'gemini',
-    model: 'gemini-3.8-flash',
+    model: 'gemini-1.5-flash',
     maxTokens: 8192,
     supportsJsonMode: true,
     requestsPerMinuteLimit: 15,
@@ -39,7 +39,7 @@ export const FREE_PROVIDER_CAPABILITIES: Record<FreeAIProvider, ProviderCapabili
   },
   groq: {
     provider: 'groq',
-    model: 'qwen/qwen3.8-27b',
+    model: 'openai/gpt-oss-120b',
     maxTokens: 4096,
     supportsJsonMode: true,
     requestsPerMinuteLimit: 30,

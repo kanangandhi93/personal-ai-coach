@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import { LearningGoal, MasteryLevel, LifecycleStage, LearningPathMode } from '@coach/shared';
 import { getSupabaseServiceClient } from '../supabase';
 
@@ -23,7 +24,7 @@ export class GoalsRepository {
       }
     }
 
-    const id = `goal-${nowMs}-${Math.random().toString(36).slice(2, 7)}`;
+    const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
     const newGoal: LearningGoal = {
@@ -47,7 +48,7 @@ export class GoalsRepository {
     // Attempt Supabase persistence
     try {
       const supabase = getSupabaseServiceClient();
-      await supabase.from('learning_goals').insert({
+      const { error } = await supabase.from('learning_goals').insert({
         id: newGoal.id,
         user_id: newGoal.userId,
         title: newGoal.title,
@@ -59,8 +60,11 @@ export class GoalsRepository {
         is_archived: newGoal.isArchived,
         metadata: newGoal.metadata
       });
-    } catch {
-      // In offline/mock mode, memory store is authoritative
+      if (error) {
+        console.error('[GoalsRepository] Supabase insert error:', error.message);
+      }
+    } catch (err: any) {
+      console.error('[GoalsRepository] Supabase connection error:', err.message);
     }
 
     return newGoal;

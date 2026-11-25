@@ -5,19 +5,23 @@ export class CurriculumRepository {
   private static roadmapsStore: Map<string, CurriculumRoadmap> = new Map();
   private static lessonProgressStore: Map<string, { status: string; timeSpentSeconds: number }> = new Map();
 
-  public static async saveRoadmap(roadmap: CurriculumRoadmap): Promise<CurriculumRoadmap> {
+  public static async saveRoadmap(roadmap: CurriculumRoadmap, userId = '9acea783-935e-4a74-a07f-851b7aaee066'): Promise<CurriculumRoadmap> {
     this.roadmapsStore.set(roadmap.goalId, roadmap);
 
     try {
       const supabase = getSupabaseServiceClient();
-      await supabase.from('curriculum_versions').insert({
+      const { error } = await supabase.from('curriculum_versions').insert({
         goal_id: roadmap.goalId,
+        user_id: userId,
         version_number: roadmap.versionNumber,
         overview: roadmap.overview,
-        dependency_graph: { concepts: roadmap.concepts }
+        dependency_graph: { concepts: roadmap.concepts, modules: roadmap.modules, fullRoadmap: roadmap }
       });
-    } catch {
-      // Offline fallback
+      if (error) {
+        console.error('[CurriculumRepository] Save roadmap error:', error.message);
+      }
+    } catch (err: any) {
+      console.error('[CurriculumRepository] Supabase connection error:', err.message);
     }
 
     return roadmap;
@@ -26,6 +30,26 @@ export class CurriculumRepository {
   public static async getRoadmapByGoalId(goalId: string): Promise<CurriculumRoadmap | null> {
     const cached = this.roadmapsStore.get(goalId);
     if (cached) return cached;
+
+    try {
+      const supabase = getSupabaseServiceClient();
+      const { data, error } = await supabase
+        .from('curriculum_versions')
+        .select('*')
+        .eq('goal_id', goalId)
+        .order('version_number', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!error && data?.dependency_graph?.fullRoadmap) {
+        const roadmap = data.dependency_graph.fullRoadmap as CurriculumRoadmap;
+        this.roadmapsStore.set(goalId, roadmap);
+        return roadmap;
+      }
+    } catch {
+      // Fallback
+    }
+
     return null;
   }
 
